@@ -43,7 +43,10 @@ export const HeroSection = () => {
   };
 
   const handleDownload = async () => {
+    console.log("Download button clicked, URL:", url);
+    
     if (!url.trim()) {
+      console.log("No URL provided");
       toast({
         title: "URL Required",
         description: "Please enter an Instagram URL",
@@ -53,6 +56,7 @@ export const HeroSection = () => {
     }
 
     if (!url.includes("instagram.com")) {
+      console.log("Invalid URL - not an Instagram URL:", url);
       toast({
         title: "Invalid URL",
         description: "Please enter a valid Instagram URL",
@@ -62,12 +66,15 @@ export const HeroSection = () => {
     }
 
     setIsLoading(true);
+    console.log("Processing URL...");
     
     const urlType = detectUrlType(url);
+    console.log("Detected URL type:", urlType);
     
     // Simulate processing
     setTimeout(() => {
       setIsLoading(false);
+      console.log("Redirecting to:", urlType === 'profile' ? '/profile' : '/preview');
       
       if (urlType === 'profile') {
         navigate(`/profile?url=${encodeURIComponent(url)}`);
