@@ -17,14 +17,17 @@ export const Preview = () => {
   // Mock preview data - in real app this would come from API
   const [previewData, setPreviewData] = useState({
     thumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=400&fit=crop&crop=center",
+    mediaUrl: type === 'reel' ? "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4" : "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1080&h=1080&fit=crop&crop=center",
     title: "Amazing sunset view",
     username: "@johndoe",
     duration: type === 'reel' ? "0:30" : null,
     likes: "1,234",
     comments: "56",
-    quality: "HD 1080p",
-    fileSize: "15.2 MB"
+    quality: "Original Quality",
+    fileSize: type === 'reel' ? "25.8 MB" : "8.4 MB"
   });
+
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     // Simulate loading preview data
@@ -79,22 +82,30 @@ export const Preview = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
-                <img 
-                  src={previewData.thumbnail} 
-                  alt="Preview"
-                  className="w-full h-full object-cover"
-                />
-                {type === 'reel' && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="bg-black/50 rounded-full p-3">
-                      <Play className="h-8 w-8 text-white" fill="white" />
-                    </div>
+                {type === 'reel' ? (
+                  <div className="relative w-full h-full">
+                    <video 
+                      src={previewData.mediaUrl}
+                      poster={previewData.thumbnail}
+                      className="w-full h-full object-cover"
+                      controls
+                      preload="metadata"
+                      onPlay={() => setIsPlaying(true)}
+                      onPause={() => setIsPlaying(false)}
+                    />
+                    {previewData.duration && (
+                      <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                        {previewData.duration}
+                      </div>
+                    )}
                   </div>
-                )}
-                {previewData.duration && (
-                  <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                    {previewData.duration}
-                  </div>
+                ) : (
+                  <img 
+                    src={previewData.mediaUrl} 
+                    alt="Instagram Post"
+                    className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
+                    onClick={() => window.open(previewData.mediaUrl, '_blank')}
+                  />
                 )}
               </div>
               
