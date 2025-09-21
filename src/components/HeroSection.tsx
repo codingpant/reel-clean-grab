@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -10,6 +11,7 @@ export const HeroSection = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handlePaste = async () => {
     try {
@@ -30,11 +32,21 @@ export const HeroSection = () => {
     }
   };
 
+  const detectUrlType = (url: string) => {
+    if (url.includes('/p/')) return 'post';
+    if (url.includes('/reel/')) return 'reel';
+    if (url.includes('instagram.com/') && !url.includes('/p/') && !url.includes('/reel/')) {
+      // Profile URL
+      return 'profile';
+    }
+    return 'post'; // default
+  };
+
   const handleDownload = async () => {
     if (!url.trim()) {
       toast({
         title: "URL Required",
-        description: "Please enter an Instagram Reels URL",
+        description: "Please enter an Instagram URL",
         variant: "destructive",
       });
       return;
@@ -51,14 +63,18 @@ export const HeroSection = () => {
 
     setIsLoading(true);
     
-    // Simulate download process
+    const urlType = detectUrlType(url);
+    
+    // Simulate processing
     setTimeout(() => {
       setIsLoading(false);
-      toast({
-        title: "Download Started",
-        description: "Your Instagram Reel is being downloaded",
-      });
-    }, 2000);
+      
+      if (urlType === 'profile') {
+        navigate(`/profile?url=${encodeURIComponent(url)}`);
+      } else {
+        navigate(`/preview?url=${encodeURIComponent(url)}&type=${urlType}`);
+      }
+    }, 1500);
   };
 
   return (
@@ -67,11 +83,11 @@ export const HeroSection = () => {
         {/* Hero Title */}
         <div className="mb-8">
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4 tracking-tight">
-            Instagram Reels
+            Instagram
             <span className="bg-gradient-primary bg-clip-text text-transparent"> Downloader</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Download Instagram Reels in HD quality for free. Fast, secure, and works on all devices.
+            Download Instagram posts, reels, stories & profiles in HD quality. Fast, secure, and works on all devices.
           </p>
         </div>
 
@@ -81,7 +97,7 @@ export const HeroSection = () => {
             <div className="flex-1 relative">
               <Input
                 type="url"
-                placeholder="Paste Instagram Reels URL here..."
+                placeholder="Paste Instagram URL here (posts, reels, or profiles)..."
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 className="h-14 text-lg bg-input/50 border-border/50 focus:border-primary/50 transition-all duration-300"
@@ -109,14 +125,14 @@ export const HeroSection = () => {
               ) : (
                 <>
                   <Download className="h-5 w-5 mr-2" />
-                  Download
+                  Continue
                 </>
               )}
             </Button>
           </div>
           
           <p className="text-sm text-muted-foreground">
-            Simply paste your Instagram Reels URL above and click download to save it in HD quality
+            Simply paste any Instagram URL above - posts, reels, or profiles - and we'll help you download the content
           </p>
         </Card>
 
@@ -127,7 +143,7 @@ export const HeroSection = () => {
               <Download className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold mb-2">HD Quality</h3>
-            <p className="text-muted-foreground">Download Instagram Reels in full HD quality without any loss</p>
+            <p className="text-muted-foreground">Download Instagram content in full HD quality without any loss</p>
           </div>
           
           <div className="text-center">
@@ -137,7 +153,7 @@ export const HeroSection = () => {
               </svg>
             </div>
             <h3 className="text-xl font-semibold mb-2">Lightning Fast</h3>
-            <p className="text-muted-foreground">Download your favorite Reels in seconds with our optimized servers</p>
+            <p className="text-muted-foreground">Download your favorite content in seconds with our optimized servers</p>
           </div>
           
           <div className="text-center">
